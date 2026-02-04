@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import time
+from selenium.common.exceptions import NoSuchElementException
 import json
 import re
 from webdriver_manager.chrome import ChromeDriverManager
@@ -210,9 +211,19 @@ def scrape_college_info(driver,URLS):
     # ================= COLLEGE NAME =================
     wait.until(EC.presence_of_element_located((By.TAG_NAME, "h1")))
     data["college_info"]["college_name"] = driver.find_element(By.TAG_NAME, "h1").text.strip()
+    try:
+        loc = driver.find_element(
+            By.XPATH,
+            "//span[contains(text(),'Location')]/following-sibling::span"
+        ).text
+    except NoSuchElementException:
+        loc = ""
 
-    # ================= LOCATION + CITY =================
-    loc = driver.find_element(By.CSS_SELECTOR, "span.f90eb6").text
+    try:
+        loc = driver.find_element(By.CSS_SELECTOR, "span.f90eb6").text
+    except NoSuchElementException:
+        loc = ""
+
     if "," in loc:
         l, c = loc.split(",", 1)
         data["college_info"]["location"] = l.strip()
