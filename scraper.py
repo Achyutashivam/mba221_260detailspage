@@ -8598,6 +8598,9 @@ def parse_faculty_reviews(driver,URLS):
             break
         except:
             continue
+    if not section:
+        print("Faculty section not found on this page")
+        return []
     driver.execute_script(
         "arguments[0].scrollIntoView({block:'center'});", section
     )
